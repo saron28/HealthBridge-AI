@@ -9,3 +9,9 @@ data/*.db
 data/*.db-journal
 data/*.db-wal
 data/*.db-shm
+# Neuro SAN runtime files
+logs/
+nss_local.db
+
+# Temporary agent debugging network
+registries/healthbridge/renewal_test.hocon
