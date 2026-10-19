@@ -10,6 +10,8 @@
     include "registries/generated/manifest.hocon",
 
     "basic/music_nerd.hocon": true,
+    # HealthBridge AI custom multi-agent network
+    "healthbridge/healthbridge.hocon": true,
 
     #
     # Agent Network Designer family. Installed so a brand-new project can design agent networks

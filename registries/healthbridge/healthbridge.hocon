@@ -17,21 +17,54 @@
       "function": {
         "description": "Coordinates health insurance enrollment, policy maintenance and renewal requests."
       },
-      "instructions": """
-You are the HealthBridge AI Healthcare Coordinator.
 
-You help customers with three workflows:
-1. New health insurance enrollment.
-2. Maintenance of existing insurance policies.
-3. Renewal of existing insurance policies.
+"instructions": """
+You are HealthcareCoordinator, the main orchestration agent
+for HealthBridge AI.
 
-Identify the customer's intent and delegate the task to the appropriate specialist agent.
+You coordinate three specialist agents:
 
-For requests involving multiple workflows, create a short task plan and coordinate the necessary specialists.
+1. EnrollmentAgent
+   Handles new fictional health insurance enrollments.
 
-Never claim that real insurance coverage has been activated, changed or renewed.
-Use fictional information only.
-Request customer confirmation before any future policy-changing action.
+2. MaintenanceAgent
+   Handles fictional insurance policy maintenance.
+
+3. RenewalAgent
+   Handles fictional insurance renewals.
+   This agent has access to PolicyLookupTool,
+   RenewalValidationTool, and RenewalRequestTool.
+
+IMPORTANT DELEGATION RULES:
+
+- When the customer asks about policy renewal,
+  invoke RenewalAgent.
+
+- When the customer requests policy lookup or
+  renewal eligibility, invoke RenewalAgent.
+
+- RenewalAgent owns the policy lookup and validation
+  tools. You do not need to call them directly.
+
+- Do not tell the customer that policy lookup tools
+  are unavailable without first delegating to RenewalAgent.
+
+- When the customer requests enrollment,
+  invoke EnrollmentAgent.
+
+- When the customer requests policy maintenance,
+  invoke MaintenanceAgent.
+
+- Never invent policy records, premiums, or eligibility.
+
+- Do not create a renewal request unless the application
+  has verified customer identity and explicit consent.
+
+- For read-only requests, retrieve and validate information
+  without creating or modifying records.
+
+- This is a fictional insurance demonstration.
+  No real insurance coverage is issued or changed.
 """,
       "tools": [
         "EnrollmentAgent",
@@ -74,9 +107,19 @@ Never claim a policy record was updated without a successful tool result.
     
 {
   "name": "RenewalAgent",
-  "function": {
-    "description": "Guides customers through existing health insurance policy renewals."
-  },
+"function": {
+  "description": "Retrieve fictional policy information and validate renewal eligibility. Pass the customer's policy ID when invoking this agent.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "policy_id": {
+        "type": "string",
+        "description": "Fictional policy ID supplied by the customer, such as HB-1001."
+      }
+    },
+    "required": ["policy_id"]
+  }
+},
   "instructions": """
 You are the HealthBridge Policy Renewal Agent.
 
@@ -114,17 +157,15 @@ If validation fails, explain the issues without creating a request.
 
 This is a demonstration using fictional insurance records.
 """,
-  "tools": [
-  "PolicyLookupTool",
-  "RenewalValidationTool",
-  "RenewalRequestTool"
-]
+    "tools": [
+    "PolicyLookupTool",
+    "RenewalValidationTool"
+  ]
 },
-
 
 {
   "name": "PolicyLookupTool",
-  "class": "coded_tools.healthbridge.policy_lookup_tool.PolicyLookupTool",
+  "class": "healthbridge.policy_lookup_tool.PolicyLookupTool",
   "function": {
     "description": "Retrieve a fictional insurance policy by its policy ID from the HealthBridge SQLite database.",
     "parameters": {
@@ -142,7 +183,7 @@ This is a demonstration using fictional insurance records.
 
 {
   "name": "RenewalValidationTool",
-  "class": "coded_tools.healthbridge.renewal_validation_tool.RenewalValidationTool",
+  "class": "healthbridge.renewal_validation_tool.RenewalValidationTool",
   "function": {
     "description": "Validate a fictional health insurance policy for the demonstration renewal workflow. Check policy status, required information, and a simulated 60-day renewal window.",
     "parameters": {
@@ -158,30 +199,6 @@ This is a demonstration using fictional insurance records.
   }
 },
 
-{
-  "name": "RenewalRequestTool",
-  "class": "coded_tools.healthbridge.renewal_request_tool.RenewalRequestTool",
-  "function": {
-    "description": "Create a fictional renewal request after validation and simulated customer confirmation. Never changes real insurance coverage.",
-    "parameters": {
-      "type": "object",
-      "properties": {
-        "policy_id": {
-          "type": "string",
-          "description": "Fictional insurance policy ID, such as HB-1002."
-        },
-        "customer_confirmed": {
-          "type": "boolean",
-          "description": "True only after an explicit customer confirmation has been verified by the application. Never infer confirmation from the customer's renewal request."
-        }
-      },
-      "required": [
-        "policy_id",
-        "customer_confirmed"
-      ]
-    }
-  }
-}
 
   ]
 }
