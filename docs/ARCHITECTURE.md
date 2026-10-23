@@ -33,6 +33,8 @@ flowchart TD
 
     NS --> LLM[OpenRouter LLM]
 
+```
+
 ## Technology Stack
 - React, TypeScript, Vite
 - Python and FastAPI
