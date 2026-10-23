@@ -15,3 +15,15 @@ nss_local.db
 
 # Temporary agent debugging network
 registries/healthbridge/renewal_test.hocon
+
+# Frontend dependencies and build outputs
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
+
+# Python generated files
+__pycache__/
+*.pyc
+
+# Demo database
+data/*.db
